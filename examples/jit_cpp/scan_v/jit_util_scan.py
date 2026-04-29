@@ -71,12 +71,13 @@ def load_lib(lib_path, check_type=True):
             ctypes.c_void_p,  # stream
             ctypes.c_void_p,  # x
             ctypes.c_void_p,  # s
+            ctypes.c_void_p,  # shift_chunk
             ctypes.c_uint32,  # scan_size
             ctypes.c_uint32,  # tile_size
         ]
         lib.scan_fp32.restype = None
 
-    def scan_func(x, s, scan_size, tile_size=16, stream_ptr=None):
+    def scan_func(x, s, shift_chunk, scan_size, tile_size, stream_ptr=None):
         if stream_ptr is None:
             stream_ptr = torch.npu.current_stream()._as_parameter_  # noqa
 
@@ -92,6 +93,7 @@ def load_lib(lib_path, check_type=True):
             stream_ptr,
             torch_to_ctypes(x),
             torch_to_ctypes(s),
+            torch_to_ctypes(shift_chunk),
             scan_size,
             tile_size,
         )
